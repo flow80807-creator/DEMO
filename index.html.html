@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Munzur Üniversitesi Kampüs Rehberi & Navigasyon</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        munzurNavy: '#0A192F',
+                        munzurBlue: '#0F2C59',
+                        munzurAccent: '#00A86B',
+                        munzurGold: '#D4AF37',
+                        munzurLight: '#F8F9FA'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        .room-poly {
+            transition: all 0.25s ease-in-out;
+            cursor: pointer;
+        }
+        .room-poly:hover {
+            fill-opacity: 0.85;
+            stroke-width: 3px;
+        }
+        .room-highlight {
+            fill: #00A86B !important;
+            fill-opacity: 0.4 !important;
+            stroke: #00A86B !important;
+            stroke-width: 3.5px !important;
+            animation: pulse-border 1.5s infinite;
+        }
+        @keyframes pulse-border {
+            0% { stroke-opacity: 1; }
+            50% { stroke-opacity: 0.3; }
+            100% { stroke-opacity: 1; }
+        }
+
+        .nav-route-path {
+            stroke-dasharray: 8, 8;
+            animation: dash 1s linear infinite;
+        }
+        @keyframes dash {
+            to { stroke-dashoffset: -16; }
+        }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #F1F5F9; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    </style>
+</head>
+<body class="h-full flex flex-col antialiased text-gray-800 bg-slate-100">
+
+    <!-- HEADER / TOPBAR -->
+    <header class="bg-munzurNavy text-white sticky top-0 z-40 border-b border-slate-800 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-munzurAccent to-amber-400 rounded-xl flex items-center justify-center font-black text-white text-lg shadow-inner">
+                        MÜ
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-base sm:text-lg tracking-tight leading-none text-white">
+                            Munzur Üniversitesi
+                        </h1>
+                        <span class="text-[11px] text-emerald-400 font-medium">Akıllı Kampüs & Navigasyon Sistemi</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Tabs -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <button onclick="switchTab('hocalar')" id="tabBtn-hocalar" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition bg-munzurAccent text-white">
+                        <i class="fa-solid fa-user-doctor text-sm"></i>
+                        <span>Hoca Durum Takibi</span>
+                    </button>
+                    <button onclick="switchTab('dersler')" id="tabBtn-dersler" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition text-gray-300 hover:text-white hover:bg-white/10">
+                        <i class="fa-solid fa-calendar-days text-sm"></i>
+                        <span>Ders Programı</span>
+                    </button>
+                    <button onclick="switchTab('rehber')" id="tabBtn-rehber" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition text-gray-300 hover:text-white hover:bg-white/10">
+                        <i class="fa-solid fa-clipboard-list text-sm"></i>
+                        <span>İşlem & Bürokrasi Rehberi</span>
+                    </button>
+                    <button onclick="switchTab('harita')" id="tabBtn-harita" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition text-gray-300 hover:text-white hover:bg-white/10">
+                        <i class="fa-solid fa-map-location-dot text-sm"></i>
+                        <span>İnteraktif Kat Planı</span>
+                    </button>
+                </nav>
+
+                <!-- User Profile Badge -->
+                <div class="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
+                    <div class="w-7 h-7 rounded-full bg-amber-400 text-munzurNavy font-bold flex items-center justify-center text-xs">
+                        AŞA
+                    </div>
+                    <div class="hidden sm:block text-left text-xs">
+                        <span class="block font-bold leading-tight">Ahmet Şahabettin AYKAL</span>
+                        <span class="text-[10px] text-gray-300">Bilgisayar Müh. 1. Sınıf</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 pb-24 md:pb-8">
+
+        <!-- MODULE 1: HOCA KONUM VE DURUM TAKİP SİSTEMİ -->
+        <section id="modul-hocalar" class="space-y-6">
+            <!-- Header & Search -->
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 mb-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        Canlı Durum Takibi
+                    </div>
+                    <h2 class="text-2xl font-black text-munzurNavy">Hocalar Odasında mı?</h2>
+                    <p class="text-gray-500 text-xs mt-0.5">Akademik personelin anlık durumlarını, ders saatlerini ve ofis konumlarını inceleyin.</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative w-full sm:w-72">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400 text-xs"></i>
+                        <input type="text" id="hocaSearchInput" onkeyup="renderHocalar()" placeholder="Hoca adı, bölüm veya oda no..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-300 text-xs focus:outline-none focus:border-munzurAccent focus:ring-1 focus:ring-munzurAccent">
+                    </div>
+                    <select id="hocaStatusFilter" onchange="renderHocalar()" class="px-3 py-2 border border-gray-300 rounded-xl text-xs bg-white focus:outline-none focus:border-munzurAccent">
+                        <option value="all">Tüm Durumlar</option>
+                        <option value="ofiste">Sadece Odasında Olanlar</option>
+                        <option value="derste">Derste Olanlar</option>
+                        <option value="toplantida">Toplantıda Olanlar</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Hoca List Cards Grid -->
+            <div id="hocaListGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Rendered dynamically via JavaScript -->
+            </div>
+        </section>
+
+        <!-- MODULE 2: ÖĞRENCİ DERS PROGRAMI VE SINIF KONUM BULUCU -->
+        <section id="modul-dersler" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold text-munzurAccent uppercase tracking-wider bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                        Haftalık Program
+                    </span>
+                    <h2 class="text-2xl font-black text-munzurNavy mt-2">Ders Programı & Sınıf Bulucu</h2>
+                    <p class="text-gray-500 text-xs mt-0.5">Bugünün derslerini görün, derse kalan süreyi takip edin ve sınıfa yol tarifi alın.</p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <label class="text-xs font-bold text-gray-600">Sınıf Seçimi:</label>
+                    <select id="classProgramSelect" onchange="renderDersProgrami()" class="px-3 py-2 border border-gray-300 rounded-xl text-xs bg-white font-semibold focus:outline-none focus:border-munzurAccent">
+                        <option value="bilg1">Bilgisayar Müh. 1. Sınıf</option>
+                        <option value="bilg2">Bilgisayar Müh. 2. Sınıf</option>
+                        <option value="elektrik1">Elektrik-Elektronik Müh. 1. Sınıf</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Program Info Card & Timeline -->
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Active Current Lesson Card -->
+                <div class="lg:col-span-1 bg-gradient-to-br from-munzurNavy to-munzurBlue text-white p-6 rounded-2xl shadow-md flex flex-col justify-between border border-slate-700">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-bold px-3 py-1 rounded-full uppercase">Şu Anki / Sıradaki Ders</span>
+                            <span class="text-xs text-amber-300 font-semibold" id="clockSpan">14:30:00</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h3 id="activeLessonTitle" class="text-xl font-bold text-white">Algoritma ve Programlama I</h3>
+                            <p id="activeLessonProf" class="text-xs text-gray-300"><i class="fa-solid fa-user-tie text-emerald-400 mr-1.5"></i> Doç. Dr. Anıl UTKU</p>
+                            <p id="activeLessonRoom" class="text-xs text-emerald-300 font-bold"><i class="fa-solid fa-door-open mr-1.5"></i> Derslik MÜH-201 (2. Kat)</p>
+                            <p id="activeLessonTime" class="text-xs text-gray-400"><i class="fa-solid fa-clock mr-1.5"></i> Saat: 14:00 - 15:30</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-white/10 space-y-3">
+                        <div class="bg-white/10 p-3 rounded-xl border border-white/10 flex justify-between items-center text-xs">
+                            <span class="text-gray-300">Derse Kalan Süre:</span>
+                            <span id="countdownTimer" class="font-extrabold text-amber-300 text-sm">-- dk</span>
+                        </div>
+                        <button id="btnGoToActiveRoom" class="w-full bg-munzurAccent hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-route"></i>
+                            <span>Sınıfa Yol Tarifi Al & Haritada Göster</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Today Schedule Table -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 class="text-base font-bold text-munzurNavy mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-munzurAccent"></i>
+                        Bugünün Ders Akışı (Cuma)
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200">
+                                <tr>
+                                    <th class="py-3 px-3">Saat</th>
+                                    <th class="py-3 px-3">Ders Adı</th>
+                                    <th class="py-3 px-3">Derslik</th>
+                                    <th class="py-3 px-3">Öğretim Elemanı</th>
+                                    <th class="py-3 px-3 text-right">Aksiyon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduleTableBody" class="divide-y divide-gray-100">
+                                <!-- Dynamic rendering -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 3: İŞLEM VE BÜROKRATİK REHBER -->
+        <section id="modul-rehber" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <span class="text-xs font-bold text-munzurAccent uppercase tracking-wider bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    Bürokrasi & Adımlarla Kılavuz
+                </span>
+                <h2 class="text-2xl font-black text-munzurNavy mt-2">Öğrenci İşlem Rehberi</h2>
+                <p class="text-gray-500 text-xs mt-0.5">Üniversitedeki işinizi en hızlı nasıl halledersiniz? Adım adım gereksinimler ve gidilecek birimler.</p>
+
+                <!-- Category Filters -->
+                <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
+                    <button onclick="filterGuide('all')" class="guide-cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-munzurNavy text-white">Tümü</button>
+                    <button onclick="filterGuide('akademik')" class="guide-cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">Akademik & Dersler</button>
+                    <button onclick="filterGuide('belge')" class="guide-cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">Belge Talepleri</button>
+                    <button onclick="filterGuide('sosyal')" class="guide-cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200">Yemekhane & Kütüphane</button>
+                </div>
+            </div>
+
+            <!-- Guide Cards Container -->
+            <div id="guideCardsGrid" class="grid md:grid-cols-2 gap-6">
+                <!-- Dynamically rendered -->
+            </div>
+        </section>
+
+        <!-- MODULE 4: İNTERAKTİF KAT PLANI VE NAVİGASYON -->
+        <section id="modul-harita" class="space-y-6 hidden">
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 mb-1">
+                        <i class="fa-solid fa-compass text-emerald-600"></i>
+                        Bina İçi Canlı Rota Bulucu
+                    </div>
+                    <h2 class="text-2xl font-black text-munzurNavy">Mühendislik Fakültesi Kat Planı</h2>
+                    <p class="text-gray-500 text-xs mt-0.5">Sınıf, laboratuvar veya hoca odasını seçin; bina girişinden hedef noktaya rota çizin.</p>
+                </div>
+
+                <!-- Floor Controls & Destination Selector -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Floor Buttons -->
+                    <div class="bg-slate-100 p-1 rounded-xl border border-gray-200 flex text-xs font-bold">
+                        <button onclick="setFloor('zemin')" id="btnFloor-zemin" class="px-3 py-2 rounded-lg text-gray-600 hover:text-munzurNavy">Zemin Kat</button>
+                        <button onclick="setFloor('1')" id="btnFloor-1" class="px-3 py-2 rounded-lg text-gray-600 hover:text-munzurNavy">1. Kat</button>
+                        <button onclick="setFloor('2')" id="btnFloor-2" class="px-3 py-2 rounded-lg bg-munzurBlue text-white shadow-sm">2. Kat</button>
+                    </div>
+
+                    <select id="mapRoomSelect" onchange="onMapRoomSelectChange()" class="px-3 py-2 border border-gray-300 rounded-xl text-xs font-semibold bg-white focus:outline-none focus:border-munzurAccent">
+                        <option value="">-- Hedef Oda Seçiniz --</option>
+                        <option value="201">201 Numaralı Amfi Derslik</option>
+                        <option value="202">202 Numaralı Sınıf</option>
+                        <option value="203">203 - Yazılım Laboratuvarı 1</option>
+                        <option value="204">204 - Bölüm Başkanlığı</option>
+                        <option value="205">205 - Öğrenci İşleri & Danışmanlık</option>
+                        <option value="206">206 - Derslik</option>
+                        <option value="207">207 - Doç. Dr. Anıl UTKU Odası</option>
+                        <option value="208">208 - Dr. Öğr. Üyesi Erhan TURAN Odası</option>
+                    </select>
+
+                    <button onclick="resetMapRoute()" class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-xl text-xs font-bold transition">
+                        <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Rotayı Temizle
+                    </button>
+                </div>
+            </div>
+
+            <!-- Map Area & Details Sidebar -->
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- SVG Canvas Container -->
+                <div class="lg:col-span-2 bg-white p-4 sm:p-6 rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[460px]">
+                    
+                    <div class="flex items-center justify-between text-xs text-gray-500 font-semibold mb-3">
+                        <span id="activeMapFloorLabel"><i class="fa-solid fa-layer-group text-munzurBlue mr-1"></i> Mühendislik Fakültesi - Kat 2</span>
+                        <span id="routeStatusBadge" class="hidden bg-emerald-100 text-emerald-800 text-[11px] px-2.5 py-0.5 rounded-full font-bold">
+                            <i class="fa-solid fa-route mr-1"></i> Rota Çizildi
+                        </span>
+                    </div>
+
+                    <!-- Interactive SVG Plan -->
+                    <div class="relative w-full bg-slate-50 rounded-xl border border-slate-200 p-2 flex items-center justify-center">
+                        <svg id="interactiveSvg" viewBox="0 0 800 450" class="w-full h-auto max-h-[400px] select-none">
+                            <!-- E-Tipi (3 Kanatlı) Ana Koridor Arka Planı -->
+                            <path d="M 100 320 L 700 320 L 700 260 L 640 260 L 640 50 L 580 50 L 580 260 L 430 260 L 430 50 L 370 50 L 370 260 L 220 260 L 220 50 L 160 50 L 160 260 L 100 260 Z" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="2"/>
+                            <text x="400" y="285" text-anchor="middle" fill="#64748B" font-size="12" font-weight="700" letter-spacing="2">ANA KORİDOR</text>
+
+                            <!-- Giriş ve Merdiven (Alt Orta) -->
+                            <g id="node-entrance">
+                                <rect x="380" y="320" width="40" height="40" fill="#00A86B" rx="4"/>
+                                <text x="400" y="345" text-anchor="middle" fill="#FFFFFF" font-size="10" font-weight="bold">GİRİŞ</text>
+                            </g>
+                            <rect x="430" y="320" width="50" height="40" fill="#94A3B8" rx="4"/>
+                            <text x="455" y="345" text-anchor="middle" fill="#FFFFFF" font-size="10" font-weight="bold">Merdiven</text>
+
+                            <!-- SOL KANAT ODALARI (201, 202) -->
+                            <g onclick="selectMapRoom('201')" class="room-group" data-room="201">
+                                <rect id="poly-201" class="room-poly" x="90" y="50" width="70" height="100" fill="#E0F2FE" stroke="#0284C7" stroke-width="2" rx="4"/>
+                                <text x="125" y="95" text-anchor="middle" font-size="12" font-weight="bold" fill="#0369A1">Oda 201</text>
+                                <text x="125" y="115" text-anchor="middle" font-size="9" fill="#0284C7">Derslik</text>
+                            </g>
+                            <g onclick="selectMapRoom('202')" class="room-group" data-room="202">
+                                <rect id="poly-202" class="room-poly" x="220" y="50" width="70" height="100" fill="#E0F2FE" stroke="#0284C7" stroke-width="2" rx="4"/>
+                                <text x="255" y="95" text-anchor="middle" font-size="12" font-weight="bold" fill="#0369A1">Oda 202</text>
+                                <text x="255" y="115" text-anchor="middle" font-size="9" fill="#0284C7">Derslik</text>
+                            </g>
+
+                            <!-- ORTA KANAT ODALARI (203, 204) -->
+                            <g onclick="selectMapRoom('203')" class="room-group" data-room="203">
+                                <rect id="poly-203" class="room-poly" x="300" y="50" width="70" height="100" fill="#FEF3C7" stroke="#D97706" stroke-width="2" rx="4"/>
+                                <text x="335" y="95" text-anchor="middle" font-size="11" font-weight="bold" fill="#B45309">Lab 1</text>
+                                <text x="335" y="115" text-anchor="middle" font-size="9" fill="#D97706">203</text>
+                            </g>
+                            <g onclick="selectMapRoom('204')" class="room-group" data-room="204">
+                                <rect id="poly-204" class="room-poly" x="430" y="50" width="70" height="100" fill="#FCE7F3" stroke="#DB2777" stroke-width="2" rx="4"/>
+                                <text x="465" y="95" text-anchor="middle" font-size="11" font-weight="bold" fill="#BE185D">Blm. Bşk.</text>
+                                <text x="465" y="115" text-anchor="middle" font-size="9" fill="#DB2777">204</text>
+                            </g>
+
+                            <!-- SAĞ KANAT ODALARI (205, 206) -->
+                            <g onclick="selectMapRoom('205')" class="room-group" data-room="205">
+                                <rect id="poly-205" class="room-poly" x="510" y="50" width="70" height="100" fill="#DCFCE7" stroke="#16A34A" stroke-width="2" rx="4"/>
+                                <text x="545" y="95" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803D">Öğr. İşl.</text>
+                                <text x="545" y="115" text-anchor="middle" font-size="9" stroke-width="0" fill="#16A34A">205</text>
+                            </g>
+                            <g onclick="selectMapRoom('206')" class="room-group" data-room="206">
+                                <rect id="poly-206" class="room-poly" x="640" y="50" width="70" height="100" fill="#E0F2FE" stroke="#0284C7" stroke-width="2" rx="4"/>
+                                <text x="675" y="95" text-anchor="middle" font-size="12" font-weight="bold" fill="#0369A1">Oda 206</text>
+                                <text x="675" y="115" text-anchor="middle" font-size="9" fill="#0284C7">Derslik</text>
+                            </g>
+
+                            <!-- ALT KORİDOR CEPHE ODALARI (207, 208 Hoca Odaları) -->
+                            <g onclick="selectMapRoom('207')" class="room-group" data-room="207">
+                                <rect id="poly-207" class="room-poly" x="160" y="320" width="100" height="80" fill="#F3E8FF" stroke="#9333EA" stroke-width="2" rx="4"/>
+                                <text x="210" y="360" text-anchor="middle" font-size="11" font-weight="bold" fill="#7E22CE">Doç. Dr. A. UTKU</text>
+                                <text x="210" y="380" text-anchor="middle" font-size="9" fill="#9333EA">Oda 207</text>
+                            </g>
+                            <g onclick="selectMapRoom('208')" class="room-group" data-room="208">
+                                <rect id="poly-208" class="room-poly" x="540" y="320" width="100" height="80" fill="#F3E8FF" stroke="#9333EA" stroke-width="2" rx="4"/>
+                                <text x="590" y="360" text-anchor="middle" font-size="11" font-weight="bold" fill="#7E22CE">Dr. E. TURAN</text>
+                                <text x="590" y="380" text-anchor="middle" font-size="9" fill="#9333EA">Oda 208</text>
+                            </g>
+
+                            <!-- Dinamik Navigasyon Rota Çizgisi -->
+                            <path id="svgNavRoute" d="" fill="none" stroke="#00A86B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="nav-route-path hidden"/>
+                            <!-- Animasyonlu Hedef Noktası -->
+                            <circle id="svgDestMarker" cx="0" cy="0" r="8" fill="#EF4444" stroke="#FFFFFF" stroke-width="2" class="hidden animate-ping"/>
+                            <circle id="svgDestMarkerSolid" cx="0" cy="0" r="6" fill="#EF4444" stroke="#FFFFFF" stroke-width="2" class="hidden"/>
+                        </svg>
+                    </div>
+
+                    <!-- Map Legend -->
+                    <div class="mt-4 flex flex-wrap gap-4 text-xs text-gray-600 border-t border-gray-100 pt-3">
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-sky-200 border border-sky-500 rounded"></span> Derslikler</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-purple-200 border border-purple-500 rounded"></span> Hoca Odaları</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-amber-200 border border-amber-500 rounded"></span> Laboratuvarlar</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-emerald-500 rounded-full"></span> Başlangıç (Giriş)</span>
+                        <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-red-500 rounded-full"></span> Hedef Oda</span>
+                    </div>
+                </div>
+
+                <!-- Room Details & Navigation Guidance Drawer -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="pb-3 border-b border-gray-100 mb-4 flex items-center justify-between">
+                            <span class="text-xs font-bold text-munzurNavy uppercase">Seçili Mekân Detayı</span>
+                            <span id="selectedRoomBadge" class="text-[10px] bg-slate-100 text-gray-600 px-2 py-0.5 rounded font-semibold">Oda Seçilmedi</span>
+                        </div>
+
+                        <div id="mapRoomDetailBox" class="space-y-4">
+                            <div class="text-center py-8 text-gray-400">
+                                <i class="fa-solid fa-map-pin text-3xl mb-2 text-slate-300"></i>
+                                <p class="text-xs">Haritadan bir odaya tıklayın veya yukarıdaki menüden bir hedef seçin.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="mapRoomActions" class="hidden pt-4 border-t border-gray-100 space-y-2">
+                        <button id="btnDrawRoute" onclick="drawRouteToCurrent()" class="w-full bg-munzurAccent hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-route"></i>
+                            <span>Girişten Buraya Rota Çiz</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-munzurNavy border-t border-slate-800 z-50 px-2 py-2">
+        <div class="grid grid-cols-4 gap-1 text-center">
+            <button onclick="switchTab('hocalar')" id="mTabBtn-hocalar" class="m-tab-btn flex flex-col items-center py-1.5 px-2 rounded-xl text-emerald-400 font-semibold">
+                <i class="fa-solid fa-user-doctor text-base"></i>
+                <span class="text-[10px] mt-1">Hocalar</span>
+            </button>
+            <button onclick="switchTab('dersler')" id="mTabBtn-dersler" class="m-tab-btn flex flex-col items-center py-1.5 px-2 rounded-xl text-gray-400 font-semibold">
+                <i class="fa-solid fa-calendar-days text-base"></i>
+                <span class="text-[10px] mt-1">Dersler</span>
+            </button>
+            <button onclick="switchTab('rehber')" id="mTabBtn-rehber" class="m-tab-btn flex flex-col items-center py-1.5 px-2 rounded-xl text-gray-400 font-semibold">
+                <i class="fa-solid fa-clipboard-list text-base"></i>
+                <span class="text-[10px] mt-1">Rehber</span>
+            </button>
+            <button onclick="switchTab('harita')" id="mTabBtn-harita" class="m-tab-btn flex flex-col items-center py-1.5 px-2 rounded-xl text-gray-400 font-semibold">
+                <i class="fa-solid fa-map-location-dot text-base"></i>
+                <span class="text-[10px] mt-1">Harita</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: HOCA MESAJ / RANDEVU TALEBİ -->
+    <div id="appointmentModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="bg-munzurNavy text-white p-4 flex items-center justify-between">
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-envelope text-emerald-400"></i>
+                    Görüşme Talebi / Mesaj İlet
+                </h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAppointmentSubmit(event)" class="p-5 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Öğretim Elemanı:</label>
+                    <input type="text" id="modalProfName" readonly class="w-full bg-slate-100 border border-gray-300 p-2.5 rounded-xl font-bold text-munzurNavy">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Konu / Görüşme Nedeni:</label>
+                    <select class="w-full border border-gray-300 p-2.5 rounded-xl focus:border-munzurAccent focus:outline-none">
+                        <option>Akademik Danışmanlık / Ders Kaydı</option>
+                        <option>Bitirme Projesi / Staj Görüşmesi</option>
+                        <option>Sınav Notu İtirazı / Soru Sorma</option>
+                        <option>Diğer Özel Görüşme</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Notunuz:</label>
+                    <textarea rows="3" required placeholder="Hocanıza iletmek istediğiniz kısa mesajı yazınız..." class="w-full border border-gray-300 p-2.5 rounded-xl focus:border-munzurAccent focus:outline-none"></textarea>
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-munzurAccent text-white font-bold hover:bg-emerald-600 transition">Talebi Gönder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- APPLICATION LOGIC & MOCK DATABASE -->
+    <script>
+        // MOCK DATABASE 1: HOCALAR
+        const hocalarData = [
+            {
+                id: 1,
+                name: "Doç. Dr. Anıl UTKU",
+                title: "Bölüm Başkanı",
+                dept: "Bilgisayar Mühendisliği",
+                room: "207",
+                floor: "2. Kat",
+                status: "ofiste", // ofiste, derste, toplantida, izinli
+                statusLabel: "Ofisinde / Odasında",
+                statusDesc: "Görüşmeye uygun.",
+                officeHours: "Pazartesi & Cuma: 14:00 - 16:00",
+                email: "anilutku@munzur.edu.tr",
+                phone: "+90 (428) 213 17 88 - 2407"
+            },
+            {
+                id: 2,
+                name: "Dr. Öğr. Üyesi Erhan TURAN",
+                title: "Öğretim Üyesi",
+                dept: "Bilgisayar Mühendisliği",
+                room: "208",
+                floor: "2. Kat",
+                status: "derste",
+                statusLabel: "Derste (Derslik 305)",
+                statusDesc: "Ders Bitişi: 15:30",
+                officeHours: "Çarşamba: 10:00 - 12:00",
+                email: "erhanturhan@munzur.edu.tr",
+                phone: "+90 (428) 213 17 88 - 2408"
+            },
+            {
+                id: 3,
+                name: "Dr. Öğr. Üyesi Mehmet Celal",
+                title: "Öğretim Üyesi",
+                dept: "Elektrik-Elektronik Müh.",
+                room: "104",
+                floor: "1. Kat",
+                status: "toplantida",
+                statusLabel: "Dekanlık Toplantısında",
+                statusDesc: "Tahmini Dönüş: 16:30",
+                officeHours: "Salı: 13:00 - 15:00",
+                email: "mcelal@munzur.edu.tr",
+                phone: "+90 (428) 213 17 88 - 1404"
+            },
+            {
+                id: 4,
+                name: "Arş. Gör. Caner Şahin",
+                title: "Araştırma Görevlisi",
+                dept: "Bilgisayar Mühendisliği",
+                room: "203",
+                floor: "2. Kat (Yazılım Lab)",
+                status: "ofiste",
+                statusLabel: "Laboratuvarda",
+                statusDesc: "Yazılım Lab 1'de çalışıyor.",
+                officeHours: "Hafta içi her gün 09:00 - 17:00",
+                email: "csahin@munzur.edu.tr",
+                phone: "+90 (428) 213 17 88 - 2403"
+            },
+            {
+                id: 5,
+                name: "Prof. Dr. Ayşe Demir",
+                title: "Dekan Yardımcısı",
+                dept: "Makine Mühendisliği",
+                room: "204",
+                floor: "2. Kat",
+                status: "izinli",
+                statusLabel: "Kampüs Dışında / İzinli",
+                statusDesc: "Akademik İzinli.",
+                officeHours: "Perşembe: 14:00 - 16:00",
+                email: "ademir@munzur.edu.tr",
+                phone: "+90 (428) 213 17 88 - 2404"
+            }
+        ];
+
+        // MOCK DATABASE 2: DERS PROGRAMLARI
+        const dersProgramlari = {
+            "bilg1": [
+                { time: "09:00 - 10:30", name: "Matematik I", room: "201", prof: "Doç. Dr. Özge AKÇAY", active: false },
+                { time: "10:45 - 12:15", name: "Fizik I", room: "202", prof: "Dr. Öğr. Üyesi Mehmet Celal", active: false },
+                { time: "14:00 - 15:30", name: "Algoritma ve Programlama I", room: "201", prof: "Doç. Dr. Anıl UTKU", active: true },
+                { time: "15:45 - 17:15", name: "Yazılım Laboratuvarı I", room: "203", prof: "Arş. Gör. Caner Şahin", active: false }
+            ],
+            "bilg2": [
+                { time: "09:00 - 11:30", name: "Veri Yapıları & Algoritmalar", room: "202", prof: "Doç. Dr. Seda Kaya", active: false },
+                { time: "13:00 - 15:00", name: "Veritabanı Yönetim Sistemleri", room: "203", prof: "Arş. Gör. Caner Şahin", active: true }
+            ],
+            "elektrik1": [
+                { time: "10:00 - 12:00", name: "Devre Analizi I", room: "206", prof: "Dr. Öğr. Üyesi Mehmet Celal", active: false }
+            ]
+        };
+
+        // MOCK DATABASE 3: BÜROKRATİK REHBER
+        const rehberData = [
+            {
+                category: "akademik",
+                title: "Ders Kaydı İtirazı ve Ekle/Bırak",
+                desc: "Çakışan veya yanlış seçilen derslerin düzeltilmesi işlemleri.",
+                steps: [
+                    "Öğrenci otomasyonundan ders kaydı çıktısı alın.",
+                    "Danışman hocanız ile görüşüp dilekçe formunu doldurun.",
+                    "Formu Fakülte Sekreterliği 205 Numaralı Ofise teslim edin."
+                ],
+                docs: ["Ders Kaydı Çıktısı", "Ekle/Bırak Dilekçe Formu"],
+                office: "205",
+                officeName: "Öğrenci İşleri Ofisi (Kat 2)"
+            },
+            {
+                category: "belge",
+                title: "Resmî Transkript ve Öğrenci Belgesi Alma",
+                desc: "İmzalı/Mühürlü veya e-Devlet barkodlu öğrenci belgesi temini.",
+                steps: [
+                    "e-Devlet üzerinden anında karekodlu belge oluşturabilirsiniz.",
+                    "Islak imzalı belge gerekiyorsa Öğrenci İşleri 205 Numaralı odaya kimliğinizle başvurun."
+                ],
+                docs: ["Öğrenci Kimlik Kartı"],
+                office: "205",
+                officeName: "Öğrenci İşleri Ofisi (Kat 2)"
+            },
+            {
+                category: "sosyal",
+                title: "Yemekhane Kartına Bakiye Yükleme ve Vize Onayı",
+                desc: "Kampüs kart aktifleme ve yemekhane indirim tanımlaması.",
+                steps: [
+                    "Üniversite online ödeme portalından bakiyenizi yükleyin.",
+                    "Kart okuma hatası durumunda Sağlık Kültür Daire Bşk. Zemin Kat bürosuna başvurun."
+                ],
+                docs: ["Öğrenci Kartı"],
+                office: "201",
+                officeName: "SKS Daire Bşk. / Zemin Kat"
+            },
+            {
+                category: "akademik",
+                title: "Staj Defteri Teslimi ve Komisyon Onayı",
+                desc: "Yaz stajı sonrası tamamlanan staj dosyasının teslimi.",
+                steps: [
+                    "İş yeri amirince imzalanmış staj defterini kapalı zarfa koyun.",
+                    "Bölüm Staj Komisyonu Başkanı Oda 204'e teslim edin."
+                ],
+                docs: ["İmzalı Staj Defteri", "Staj Sicil Fişi (Kapalı Zarf)"],
+                office: "204",
+                officeName: "Bölüm Başkanlığı (Kat 2)"
+            }
+        ];
+
+        // MOCK DATABASE 4: YENİ E-TİPİ BİNA KOORDİNAT SİSTEMİ (Oda Açıklamalı)
+        const roomCoords = {
+            // --- SOL KANAT ---
+            '201': { x: 125, y: 100, corridorX: 190, corridorY: 100 }, // Oda 201: Amfi Derslik
+            '202': { x: 255, y: 100, corridorX: 190, corridorY: 100 }, // Oda 202: Sınıf / Derslik
+            // --- ORTA KANAT ---
+            '203': { x: 335, y: 100, corridorX: 400, corridorY: 100 }, // Oda 203: Yazılım Laboratuvarı 1
+            '204': { x: 465, y: 100, corridorX: 400, corridorY: 100 }, // Oda 204: Bölüm Başkanlığı
+            // --- SAĞ KANAT ---
+            '205': { x: 545, y: 100, corridorX: 610, corridorY: 100 }, // Oda 205: Öğrenci İşleri & Danışmanlık
+            '206': { x: 675, y: 100, corridorX: 610, corridorY: 100 }, // Oda 206: Sınıf / Derslik
+            // --- ALT KORİDOR CEPHE (Hoca Odaları) ---
+            '207': { x: 210, y: 360, corridorX: 210, corridorY: 290 }, // Oda 207: Doç. Dr. Anıl UTKU Odası
+            '208': { x: 590, y: 360, corridorX: 590, corridorY: 290 }  // Oda 208: Dr. Öğr. Üyesi Erhan TURAN Odası
+        };
+
+        let currentActiveRoomOnMap = null;
+
+        // INITIALIZATION ON LOAD
+        window.onload = function() {
+            renderHocalar();
+            renderDersProgrami();
+            renderRehber('all');
+            startClock();
+        };
+
+        // TAB SWITCHING LOGIC
+        function switchTab(tabId) {
+            const tabs = ['hocalar', 'dersler', 'rehber', 'harita'];
+            tabs.forEach(t => {
+                const mod = document.getElementById(`modul-${t}`);
+                const btn = document.getElementById(`tabBtn-${t}`);
+                const mBtn = document.getElementById(`mTabBtn-${t}`);
+
+                if(t === tabId) {
+                    mod.classList.remove('hidden');
+                    if(btn) btn.className = "tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition bg-munzurAccent text-white";
+                    if(mBtn) mBtn.className = "m-tab-btn flex flex-col items-center py-1.5 px-2 rounded-xl text-emerald-400 font-semibold";
+                } else {
+                    mod.classList.add('hidden');
+                    if(btn) btn.className = "tab-btn px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition text-gray-300 hover:text-white hover:bg-white/10";
+                    if(mBtn) mBtn.className = "m-tab-btn flex flex-col items-center py-1.5 px-2 rounded-xl text-gray-400 font-semibold";
+                }
+            });
+        }
+
+        // RENDER HOCALAR
+        function renderHocalar() {
+            const query = document.getElementById('hocaSearchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('hocaStatusFilter').value;
+            const grid = document.getElementById('hocaListGrid');
+
+            grid.innerHTML = '';
+
+            const filtered = hocalarData.filter(h => {
+                const matchQuery = h.name.toLowerCase().includes(query) || h.dept.toLowerCase().includes(query) || h.room.includes(query);
+                const matchStatus = statusFilter === 'all' || h.status === statusFilter;
+                return matchQuery && matchStatus;
+            });
+
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-gray-400 text-xs">Aranan kriterlere uygun hoca bulunamadı.</div>`;
+                return;
+            }
+
+            filtered.forEach(h => {
+                let badgeColor = "";
+                let icon = "";
+
+                if(h.status === 'ofiste') {
+                    badgeColor = "bg-emerald-100 text-emerald-800 border-emerald-300";
+                    icon = "fa-door-open text-emerald-600";
+                } else if(h.status === 'derste') {
+                    badgeColor = "bg-amber-100 text-amber-800 border-amber-300";
+                    icon = "fa-chalkboard-user text-amber-600";
+                } else if(h.status === 'toplantida') {
+                    badgeColor = "bg-blue-100 text-blue-800 border-blue-300";
+                    icon = "fa-users text-blue-600";
+                } else {
+                    badgeColor = "bg-gray-100 text-gray-700 border-gray-300";
+                    icon = "fa-user-slash text-gray-500";
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-3">
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">${h.dept}</span>
+                                <h3 class="font-bold text-base text-munzurNavy leading-snug">${h.name}</h3>
+                                <p class="text-xs text-emerald-600 font-semibold">${h.title}</p>
+                            </div>
+                            <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full border ${badgeColor}">
+                                <i class="fa-solid ${icon}"></i>
+                                ${h.statusLabel}
+                            </span>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1.5 mb-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Oda No:</span>
+                                <span class="font-bold text-munzurNavy">Oda ${h.room} (${h.floor})</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Ofis Saatleri:</span>
+                                <span class="font-semibold text-gray-700">${h.officeHours}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Dahili Tel:</span>
+                                <span class="font-semibold text-munzurBlue">${h.phone}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-2 border-t border-gray-100">
+                        <button onclick="goToRoomOnMap('${h.room}')" class="flex-1 bg-munzurNavy hover:bg-munzurBlue text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-location-dot text-amber-400"></i>
+                            <span>Odayı Göster</span>
+                        </button>
+                        <button onclick="openModal('${h.name}')" class="px-3 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 rounded-xl text-xs font-bold transition">
+                            <i class="fa-solid fa-envelope"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // RENDER DERS PROGRAMI
+        function renderDersProgrami() {
+            const selectedClass = document.getElementById('classProgramSelect').value;
+            const program = dersProgramlari[selectedClass] || [];
+            const tbody = document.getElementById('scheduleTableBody');
+
+            tbody.innerHTML = '';
+
+            program.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = p.active ? "bg-emerald-50/60 font-medium" : "hover:bg-slate-50";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-bold text-munzurNavy">${p.time}</td>
+                    <td class="py-3 px-3 font-semibold text-gray-800">${p.name} ${p.active ? '<span class="ml-2 text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full">Aktif Ders</span>' : ''}</td>
+                    <td class="py-3 px-3 text-emerald-700 font-bold">Derslik ${p.room}</td>
+                    <td class="py-3 px-3 text-gray-600">${p.prof}</td>
+                    <td class="py-3 px-3 text-right">
+                        <button onclick="goToRoomOnMap('${p.room}')" class="bg-munzurBlue hover:bg-munzurNavy text-white px-3 py-1.5 rounded-lg text-[11px] font-bold transition flex items-center gap-1 ml-auto">
+                            <i class="fa-solid fa-route text-amber-300"></i>
+                            <span>Haritada Git</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update active lesson card
+            const activeLesson = program.find(p => p.active) || program[0];
+            if(activeLesson) {
+                document.getElementById('activeLessonTitle').innerText = activeLesson.name;
+                document.getElementById('activeLessonProf').innerHTML = `<i class="fa-solid fa-user-tie text-emerald-400 mr-1.5"></i> ${activeLesson.prof}`;
+                document.getElementById('activeLessonRoom').innerHTML = `<i class="fa-solid fa-door-open mr-1.5"></i> Derslik MÜH-${activeLesson.room} (2. Kat)`;
+                document.getElementById('activeLessonTime').innerHTML = `<i class="fa-solid fa-clock mr-1.5"></i> Saat: ${activeLesson.time}`;
+                document.getElementById('btnGoToActiveRoom').onclick = function() { goToRoomOnMap(activeLesson.room); };
+            }
+        }
+
+        // RENDER BÜROKRATİK REHBER
+        function renderRehber(cat) {
+            const grid = document.getElementById('guideCardsGrid');
+            grid.innerHTML = '';
+
+            const filtered = cat === 'all' ? rehberData : rehberData.filter(r => r.category === cat);
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between";
+                
+                let stepsList = item.steps.map((s, idx) => `<li class="flex items-start gap-2"><span class="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center shrink-0 text-[10px] mt-0.5">${idx+1}</span> <span>${s}</span></li>`).join('');
+                let docsList = item.docs.map(d => `<span class="bg-slate-100 text-gray-700 px-2.5 py-1 rounded-md text-[11px] border border-gray-200">${d}</span>`).join(' ');
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold text-munzurAccent uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">${item.officeName}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-munzurNavy mb-1">${item.title}</h3>
+                        <p class="text-xs text-gray-500 mb-4">${item.desc}</p>
+
+                        <div class="space-y-3 mb-4">
+                            <h4 class="text-xs font-bold text-gray-700 uppercase">Adım Adım Yapılacaklar:</h4>
+                            <ul class="text-xs text-gray-600 space-y-2">${stepsList}</ul>
+                        </div>
+
+                        <div class="space-y-2 mb-4">
+                            <h4 class="text-xs font-bold text-gray-700 uppercase">Gerekli Belgeler:</h4>
+                            <div class="flex flex-wrap gap-1.5">${docsList}</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-100">
+                        <button onclick="goToRoomOnMap('${item.office}')" class="w-full bg-munzurAccent hover:bg-emerald-600 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-compass"></i>
+                            <span>Sorumlu Ofise Yol Tarifi Al (Oda ${item.office})</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterGuide(cat) {
+            document.querySelectorAll('.guide-cat-btn').forEach(btn => {
+                btn.className = "guide-cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200";
+            });
+            event.target.className = "guide-cat-btn px-3 py-1.5 rounded-xl text-xs font-semibold bg-munzurNavy text-white";
+            renderRehber(cat);
+        }
+
+        // MAP & NAVIGATION CONTROLS
+        function goToRoomOnMap(roomId) {
+            switchTab('harita');
+            setTimeout(() => {
+                selectMapRoom(roomId);
+                drawRouteToCurrent();
+            }, 100);
+        }
+
+        function selectMapRoom(roomId) {
+            currentActiveRoomOnMap = roomId;
+            const selectEl = document.getElementById('mapRoomSelect');
+            selectEl.value = roomId;
+
+            // Remove highlight from previous
+            document.querySelectorAll('.room-poly').forEach(p => p.classList.remove('room-highlight'));
+
+            const targetPoly = document.getElementById(`poly-${roomId}`);
+            if(targetPoly) {
+                targetPoly.classList.add('room-highlight');
+            }
+
+            // Update Details Box
+            const detailBox = document.getElementById('mapRoomDetailBox');
+            const actionsBox = document.getElementById('mapRoomActions');
+            const badge = document.getElementById('selectedRoomBadge');
+
+            badge.innerText = `Oda ${roomId}`;
+            badge.className = "text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold";
+            actionsBox.classList.remove('hidden');
+
+            const hocaMatch = hocalarData.find(h => h.room === roomId);
+
+            detailBox.innerHTML = `
+                <div class="space-y-3">
+                    <h3 class="text-xl font-bold text-munzurNavy">Oda ${roomId} ${hocaMatch ? `- ${hocaMatch.name}` : ''}</h3>
+                    <p class="text-xs text-emerald-600 font-bold">Mühendislik Fakültesi - 2. Kat Koridoru</p>
+                    
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2 text-xs">
+                        ${hocaMatch ? `
+                            <div class="flex justify-between"><span class="text-gray-500">Unvan/Görev:</span><span class="font-bold">${hocaMatch.title}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">Anlık Durum:</span><span class="font-bold text-emerald-600">${hocaMatch.statusLabel}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">Ofis Saatleri:</span><span>${hocaMatch.officeHours}</span></div>
+                        ` : `
+                            <div class="flex justify-between"><span class="text-gray-500">Mekân Tipi:</span><span class="font-bold">Derslik / İdari Birim</span></div>
+                            <div class="flex justify-between"><span class="text-gray-500">Kullanım:</span><span>Genel Öğrenci Kullanımı</span></div>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function onMapRoomSelectChange() {
+            const val = document.getElementById('mapRoomSelect').value;
+            if(val) selectMapRoom(val);
+        }
+
+        function drawRouteToCurrent() {
+            if(!currentActiveRoomOnMap || !roomCoords[currentActiveRoomOnMap]) return;
+
+            const target = roomCoords[currentActiveRoomOnMap];
+            const startNode = { x: 400, y: 320 }; // Giriş Kapısı Koordinatı
+            const mainCorridorY = 290; // Ana koridor yatay düzlemi
+
+            // Yeni E-Tipi Rota Algoritması: Giriş -> Ana Koridor (Yatay) -> İlgili Kanat (Dikey) -> Oda
+            const pathD = `M ${startNode.x} ${startNode.y} L ${startNode.x} ${mainCorridorY} L ${target.corridorX} ${mainCorridorY} L ${target.corridorX} ${target.corridorY} L ${target.x} ${target.y}`;
+
+            const routePath = document.getElementById('svgNavRoute');
+            const markerPing = document.getElementById('svgDestMarker');
+            const markerSolid = document.getElementById('svgDestMarkerSolid');
+            const routeBadge = document.getElementById('routeStatusBadge');
+
+            routePath.setAttribute('d', pathD);
+            routePath.classList.remove('hidden');
+
+            markerPing.setAttribute('cx', target.x);
+            markerPing.setAttribute('cy', target.y);
+            markerPing.classList.remove('hidden');
+
+            markerSolid.setAttribute('cx', target.x);
+            markerSolid.setAttribute('cy', target.y);
+            markerSolid.classList.remove('hidden');
+
+            routeBadge.classList.remove('hidden');
+        }
+
+        function resetMapRoute() {
+            document.getElementById('svgNavRoute').classList.add('hidden');
+            document.getElementById('svgDestMarker').classList.add('hidden');
+            document.getElementById('svgDestMarkerSolid').classList.add('hidden');
+            document.getElementById('routeStatusBadge').classList.add('hidden');
+            document.querySelectorAll('.room-poly').forEach(p => p.classList.remove('room-highlight'));
+            document.getElementById('mapRoomSelect').value = '';
+            document.getElementById('mapRoomActions').classList.add('hidden');
+            document.getElementById('selectedRoomBadge').innerText = "Oda Seçilmedi";
+            document.getElementById('selectedRoomBadge').className = "text-[10px] bg-slate-100 text-gray-600 px-2 py-0.5 rounded font-semibold";
+            document.getElementById('mapRoomDetailBox').innerHTML = `
+                <div class="text-center py-8 text-gray-400">
+                    <i class="fa-solid fa-map-pin text-3xl mb-2 text-slate-300"></i>
+                    <p class="text-xs">Haritadan bir odaya tıklayın veya yukarıdaki menüden bir hedef seçin.</p>
+                </div>
+            `;
+        }
+
+        function setFloor(floor) {
+            document.getElementById('btnFloor-zemin').className = "px-3 py-2 rounded-lg text-gray-600 hover:text-munzurNavy";
+            document.getElementById('btnFloor-1').className = "px-3 py-2 rounded-lg text-gray-600 hover:text-munzurNavy";
+            document.getElementById('btnFloor-2').className = "px-3 py-2 rounded-lg text-gray-600 hover:text-munzurNavy";
+
+            document.getElementById(`btnFloor-${floor}`).className = "px-3 py-2 rounded-lg bg-munzurBlue text-white shadow-sm";
+            document.getElementById('activeMapFloorLabel').innerHTML = `<i class="fa-solid fa-layer-group text-munzurBlue mr-1"></i> Mühendislik Fakültesi - ${floor === 'zemin' ? 'Zemin Kat' : floor + '. Kat'} Planı`;
+
+            resetMapRoute();
+        }
+
+        // UTILS: CLOCK & COUNTDOWN
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('clockSpan').innerText = now.toLocaleTimeString('tr-TR');
+                document.getElementById('countdownTimer').innerText = "24 dk kaldı";
+            }, 1000);
+        }
+
+        // MODAL FUNCTIONS
+        function openModal(profName) {
+            document.getElementById('modalProfName').value = profName;
+            document.getElementById('appointmentModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('appointmentModal').classList.add('hidden');
+        }
+
+        function handleAppointmentSubmit(e) {
+            e.preventDefault();
+            alert('Mesajınız / Görüşme talebiniz öğretim elemanının e-posta adresine ve sistem paneline iletilmiştir.');
+            closeModal();
+        }
+    </script>
+</body>
+</html>
